@@ -1,0 +1,109 @@
+package net.Indyuce.mmoitems.comp.rpg;
+
+import dev.aurelium.auraskills.api.AuraSkillsApi;
+import dev.aurelium.auraskills.api.event.skill.SkillLevelUpEvent;
+import dev.aurelium.auraskills.api.skill.Skill;
+import dev.aurelium.auraskills.api.skill.Skills;
+import dev.aurelium.auraskills.api.stat.StatModifier;
+import dev.aurelium.auraskills.api.stat.Stats;
+import dev.aurelium.auraskills.api.trait.TraitModifier;
+import dev.aurelium.auraskills.api.trait.Traits;
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.version.Sounds;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.player.PlayerData;
+import net.Indyuce.mmoitems.api.player.RPGPlayer;
+import net.Indyuce.mmoitems.api.util.message.Message;
+import net.Indyuce.mmoitems.stat.type.DoubleStat;
+import net.Indyuce.mmoitems.stat.type.RequiredLevelStat;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
+
+public class AuraSkillsHook implements  Listener {
+    private final AuraSkillsApi aSkills;
+
+    public AuraSkillsHook() {
+        aSkills = AuraSkillsApi.get();
+
+        for (var auraStat : Stats.values()) {
+            final var statName = UtilityMethods.caseOnWords(auraStat.name().toLowerCase());
+            final var miStat = new DoubleStat("ADDITIONAL_" + auraStat.name(), Material.BOOK,
+                    "Additional " + statName,
+                    new String[]{"Additional " + statName + " (AuraSkills)"},
+                    new String[]{"!miscellaneous", "!block", "all"});
+
+            MMOItems.plugin.getStats().register(miStat);
+            MythicLib.plugin.getStats().computeStat(miStat.getId()).addUpdateListener(ins -> updateAuraStatModifier(ins, auraStat));
+        }
+
+        // Register stat for required professions
+        for (Skills skill : Skills.values())
+            MMOItems.plugin.getStats().register(new RequiredProfessionStat(skill));
+
+        // Stat updates
+        MythicLib.plugin.getStats().computeStat("MAX_MANA").addUpdateListener(this::updateMaxManaModifier);
+    }
+
+    private void updateAuraStatModifier(@NotNull StatInstance instance, @NotNull Stats auraStat) {
+        final var statValue = instance.getFinal();
+
+        aSkills.getUser(instance.getMap().getPlayer().getUniqueId()).addStatModifier(new StatModifier(MODIFIER_KEY_PREFIX + auraStat.name(), auraStat, statValue));
+    }
+
+    private void updateMaxManaModifier(@NotNull StatInstance instance) {
+        final var auraUser = aSkills.getUser(instance.getMap().getPlayer().getUniqueId());
+        final var statValue = instance.getFinal();
+
+        auraUser.addTraitModifier(new TraitModifier(MODIFIER_KEY_PREFIX + "max_mana", Traits.MAX_MANA, statValue));
+    }
+
+    @EventHandler
+    public void a(SkillLevelUpEvent event) {
+        OfflinePlayer player = event.getPlayer();
+        if (player.isOnline()) PlayerData.get(player).resolveModifiersLater();
+    }
+
+    /**
+     * AuraSkills stores modifiers using ONE hash map for every stat
+     * unlike MythicLib which has several stat instances. Therefore, a
+     * valid key for a stat modifier is "mmoitems_<stat_name>".
+     * <p>
+     * Be careful, ASkills permanently stores modifiers unlike ML
+     */
+    private static final String MODIFIER_KEY_PREFIX = "mmoitems_";
+
+    private class RequiredProfessionStat extends RequiredLevelStat {
+        private final Skill skill;
+
+        public RequiredProfessionStat(Skills skill) {
+            super(skill.name(), Material.EXPERIENCE_BOTTLE, skill.getDisplayName(Locale.getDefault()),
+                    new String[]{"Amount of " + skill.getDisplayName(Locale.getDefault()) + " levels the", "player needs to use the item.", "(AuraSkills)"});
+
+            this.skill = aSkills.getGlobalRegistry().getSkill(skill.getId());
+        }
+
+        @Override
+        public boolean canUse(RPGPlayer player, NBTItem item, boolean message) {
+            final int requirement = item.getInteger(this.getNBTPath());
+            if (requirement <= 0) return true;
+
+            final int skillLevel = aSkills.getUser(player.getPlayer().getUniqueId()).getSkillLevel(skill);
+            if (skillLevel >= requirement || player.getPlayer().hasPermission("mmoitems.bypass.level")) return true;
+
+            if (message) {
+                Message.NOT_ENOUGH_PROFESSION.format(ChatColor.RED, "#profession#", skill.getDisplayName(Locale.getDefault())).send(player.getPlayer());
+                player.getPlayer().playSound(player.getPlayer().getLocation(), Sounds.ENTITY_VILLAGER_NO, 1, 1.5f);
+            }
+            return false;
+        }
+    }
+}

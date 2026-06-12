@@ -1,0 +1,129 @@
+package net.Indyuce.mmoitems.comp.mmocore;
+
+import io.lumine.mythic.lib.MythicLib;
+import net.Indyuce.mmocore.MMOCore;
+import net.Indyuce.mmocore.api.event.PlayerChangeClassEvent;
+import net.Indyuce.mmocore.api.player.stats.StatType;
+import net.Indyuce.mmocore.experience.EXPSource;
+import net.Indyuce.mmocore.experience.Profession;
+import net.Indyuce.mmocore.experience.source.RepairItemExperienceSource;
+import net.Indyuce.mmocore.manager.profession.ExperienceSourceManager;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.event.item.ItemCustomRepairEvent;
+import net.Indyuce.mmoitems.api.event.item.RepairItemEvent;
+import net.Indyuce.mmoitems.api.player.PlayerData;
+import net.Indyuce.mmoitems.comp.mmocore.stat.ExtraAttribute;
+import net.Indyuce.mmoitems.comp.mmocore.stat.RequiredAttribute;
+import net.Indyuce.mmoitems.comp.mmocore.stat.RequiredProfession;
+import net.Indyuce.mmoitems.stat.type.DoubleStat;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLevelChangeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+
+import java.util.Locale;
+
+public class MMOCoreHook implements Listener {
+
+    /**
+     * Called when MMOItems enables
+     * <p>
+     * These stats are only updated on a server reload because that
+     * class has to be instantiated again for the registered stats to update
+     */
+    public MMOCoreHook() {
+        for (var attribute : MMOCore.plugin.attributeManager.getAll()) {
+
+            // Item requirement
+            MMOItems.plugin.getStats().register(new RequiredAttribute(attribute));
+
+            // Extra attribute stat
+            final var extraStat = new ExtraAttribute(attribute);
+            MMOItems.plugin.getStats().register(extraStat);
+            MythicLib.plugin.getStats().computeStat(extraStat.getId()).addUpdateListener(statInstance -> {
+                final var mmocorePlayerData = net.Indyuce.mmocore.api.player.PlayerData.get(statInstance.getMap().getPlayer());
+                final var attributeInstance = mmocorePlayerData.getAttributes().getInstance(attribute);
+                attributeInstance.updateStats();
+            });
+        }
+
+        for (Profession profession : MMOCore.plugin.professionManager.getAll()) {
+
+            // Adds profession specific Additional Experience stats.
+            MMOItems.plugin.getStats().register(new DoubleStat((StatType.ADDITIONAL_EXPERIENCE.name() + '_' + profession.getId())
+                    .replace('-', '_').replace(' ', '_').toUpperCase(Locale.ROOT),
+                    Material.EXPERIENCE_BOTTLE, profession.getName() + ' ' + "Additional Experience (MMOCore)"
+                    , new String[]{"Additional MMOCore profession " + profession.getName() + " experience in %."}, new String[]{"!block", "all"}));
+            MMOItems.plugin.getStats().register(new RequiredProfession(profession));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void updateInventoryOnLevelUp(PlayerLevelChangeEvent event) {
+        PlayerData.get(event.getPlayer()).resolveModifiersLater();
+    }
+
+    @EventHandler
+    public void updateInventoryOnClassChange(PlayerChangeClassEvent event) {
+        PlayerData.get(event.getPlayer()).resolveModifiersLater();
+    }
+
+    /**
+     * This fixes https://gitlab.com/phoenix-dvpmt/mmocore/-/issues/616
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void handleVanillaRepairs(RepairItemEvent event) {
+        final ExperienceSourceManager<RepairItemExperienceSource> expManager = MMOCore.plugin.experience.getManager(RepairItemExperienceSource.class);
+        if (expManager == null)
+            return;
+
+        final ItemStack item = event.getTargetItem().getItem();
+        if (!MMOCore.plugin.smithingManager.hasExperience(item.getType()))
+            return;
+
+        final Player player = event.getPlayer();
+        final net.Indyuce.mmocore.api.player.PlayerData playerData = net.Indyuce.mmocore.api.player.PlayerData.get(player);
+        final int effectiveRepair = Math.min(event.getRepaired(), ((Damageable) item.getItemMeta()).getDamage());
+
+        for (RepairItemExperienceSource source : expManager.getSources())
+            if (source.matches(playerData, item)) {
+
+                /*
+                 * Calculate exp based on amount of durability which was repaired,
+                 * substract damage from old item durability.
+                 */
+                final double exp = MMOCore.plugin.smithingManager.getBaseExperience(item.getType()) * effectiveRepair / 100;
+                source.getDispenser().giveExperience(playerData, exp, playerData.getPlayer().getLocation(), EXPSource.SOURCE);
+            }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void handleCustomRepairs(ItemCustomRepairEvent event) {
+        final ExperienceSourceManager<RepairItemExperienceSource> expManager = MMOCore.plugin.experience.getManager(RepairItemExperienceSource.class);
+        if (expManager == null)
+            return;
+
+        final ItemStack item = event.getSourceItem().getNBTItem().getItem();
+        if (!MMOCore.plugin.smithingManager.hasExperience(item.getType()))
+            return;
+
+        final Player player = event.getPlayer();
+        final net.Indyuce.mmocore.api.player.PlayerData playerData = net.Indyuce.mmocore.api.player.PlayerData.get(player);
+        final int effectiveRepair = Math.min(event.getDurabilityIncrease(), event.getSourceItem().getMaxDurability() - event.getSourceItem().getDurability());
+
+        for (RepairItemExperienceSource source : expManager.getSources())
+            if (source.matches(playerData, item)) {
+
+                /*
+                 * Calculate exp based on amount of durability which was repaired,
+                 * substract damage from old item durability.
+                 */
+                final double exp = MMOCore.plugin.smithingManager.getBaseExperience(item.getType()) * effectiveRepair / 100;
+                source.getDispenser().giveExperience(playerData, exp, playerData.getPlayer().getLocation(), EXPSource.SOURCE);
+            }
+    }
+}

@@ -1,0 +1,204 @@
+package net.Indyuce.mmoitems.stat.data;
+
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.gson.JsonObject;
+import io.lumine.mythic.lib.player.cooldown.CooldownInfo;
+import io.lumine.mythic.lib.skill.Skill;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.player.PlayerData;
+import net.Indyuce.mmoitems.api.player.RPGPlayer;
+import net.Indyuce.mmoitems.api.util.message.Message;
+import net.Indyuce.mmoitems.skill.RegisteredSkill;
+import net.Indyuce.mmoitems.util.MMOUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ * This is not really a stat data since abilities are always
+ * stored as lists inside of items. This is more of a commonly
+ * used utility class which defines the castable implementation
+ * of the {@link Skill} interface for MMOItems.
+ */
+public class AbilityData extends Skill {
+    private final TriggerType triggerType;
+    private final boolean hide;
+    @NotNull
+    private final Map<String, Double> modifiers = new HashMap<>();
+
+    public AbilityData(@NotNull JsonObject object) {
+        super(MythicLib.plugin.getSkills().getHandler(object.get("Id").getAsString()));
+
+        triggerType = MMOUtils.backwardsCompatibleTriggerType(object.get("CastMode").getAsString());
+        hide = object.has("Hide") && object.get("Hide").getAsBoolean();
+
+        JsonObject modifiers = object.getAsJsonObject("Modifiers");
+        modifiers.entrySet().forEach(entry -> setModifier(entry.getKey(), entry.getValue().getAsDouble()));
+    }
+
+    public AbilityData(@NotNull ConfigurationSection config) {
+        super(MythicLib.plugin.getSkills().getHandler(UtilityMethods.enumName(Objects.requireNonNull(config.getString("type"), "Ability is missing type"))));
+
+        triggerType = MMOUtils.backwardsCompatibleTriggerType(UtilityMethods.enumName(Objects.requireNonNull(config.getString("mode"), "Ability is missing mode")));
+        hide = config.getBoolean("hide");
+
+        for (String key : config.getKeys(false))
+            if (!key.equalsIgnoreCase("mode") && !key.equalsIgnoreCase("type") && this.handler.getModifiers().contains(key))
+                modifiers.put(key, config.getDouble(key));
+    }
+
+    @Deprecated
+    public AbilityData(RegisteredSkill ability, TriggerType triggerType) {
+        this(ability.getHandler(), triggerType, false);
+    }
+
+    public AbilityData(SkillHandler<?> ability, TriggerType triggerType) {
+        this(ability, triggerType, false);
+    }
+
+    @Deprecated
+    public AbilityData(RegisteredSkill ability, TriggerType triggerType, boolean hide) {
+        this(ability.getHandler(), triggerType, hide);
+    }
+
+    public AbilityData(SkillHandler<?> ability, TriggerType triggerType, boolean hide) {
+        super(ability);
+
+        this.triggerType = triggerType;
+        this.hide = hide;
+    }
+
+    @Deprecated
+    public RegisteredSkill getAbility() {
+        return new RegisteredSkill(this.handler);
+    }
+
+    @Override
+    public TriggerType getTrigger() {
+        return triggerType;
+    }
+
+    public boolean hidesFromLore() {
+        return hide;
+    }
+
+    public Set<String> getModifiers() {
+        return modifiers.keySet();
+    }
+
+    public void setModifier(String path, double value) {
+        // Validate.isTrue(getHandler().getModifiers().contains(path), "Could not find modifier called '" + path + "'");
+        modifiers.put(path, value);
+    }
+
+    public boolean hasModifier(String path) {
+        return modifiers.containsKey(path);
+    }
+
+    @Override
+    public boolean getResult(SkillMetadata meta) {
+
+        PlayerData playerData = PlayerData.get(meta.getCaster().getPlayer());
+        RPGPlayer rpgPlayer = playerData.getRPG();
+        Player player = meta.getCaster().getPlayer();
+
+        // Check for cooldown
+        if (meta.getCaster().getData().getCooldownMap().isOnCooldown(this)) {
+            CooldownInfo info = playerData.getMMOPlayerData().getCooldownMap().getInfo(this);
+            if (!getTrigger().isSilent()) {
+                StringBuilder progressBar = new StringBuilder(ChatColor.YELLOW + "");
+                double progress = (double) (info.getInitialCooldown() - info.getRemaining()) / info.getInitialCooldown() * 10;
+                String barChar = MMOItems.plugin.getConfig().getString("cooldown-progress-bar-char");
+                for (int j = 0; j < 10; j++)
+                    progressBar.append(progress >= j ? ChatColor.GREEN : ChatColor.WHITE).append(barChar);
+                Message.SPELL_ON_COOLDOWN.format(ChatColor.RED, "#left#", MythicLib.plugin.getMMOConfig().decimal.format(info.getRemaining() / 1000d), "#progress#", progressBar.toString(), "#s#", (info.getRemaining() > 1999 ? "s" : "")).send(player);
+            }
+            return false;
+        }
+
+        // Check for permission
+        if (MMOItems.plugin.getConfig().getBoolean("permissions.abilities") && !player.hasPermission("mmoitems.ability." + getHandler().getLowerCaseId()) && !player.hasPermission("mmoitems.bypass.ability"))
+            return false;
+
+        // Check for mana cost
+        if (hasModifier("mana") && rpgPlayer.getMana() < meta.getParameter("mana")) {
+            Message.NOT_ENOUGH_MANA.format(ChatColor.RED).send(player);
+            return false;
+        }
+
+        // Check for stamina cost
+        if (hasModifier("stamina") && rpgPlayer.getStamina() < meta.getParameter("stamina")) {
+            Message.NOT_ENOUGH_STAMINA.format(ChatColor.RED).send(player);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void whenCast(SkillMetadata meta) {
+        PlayerData playerData = PlayerData.get(meta.getCaster().getPlayer());
+        RPGPlayer rpgPlayer = playerData.getRPG();
+
+        // Apply mana cost
+        if (hasModifier("mana")) rpgPlayer.giveMana(-meta.getParameter("mana"));
+
+        // Apply stamina cost
+        if (hasModifier("stamina")) rpgPlayer.giveStamina(-meta.getParameter("stamina"));
+
+        // Apply cooldown
+        double cooldown = meta.getParameter("cooldown") * (1 - Math.min(.8, meta.getCaster().getStat("COOLDOWN_REDUCTION") / 100));
+        if (cooldown > 0) meta.getCaster().getData().getCooldownMap().applyCooldown(this, cooldown);
+    }
+
+    @Override
+    public double getParameter(String path) {
+        return modifiers.getOrDefault(path, handler.getDefaultItemParameter(path));
+    }
+
+    public JsonObject toJson() {
+        JsonObject object = new JsonObject();
+        object.addProperty("Id", handler.getId());
+        object.addProperty("CastMode", getTrigger().name());
+        object.addProperty("Hide", this.hide);
+
+        JsonObject modifiers = new JsonObject();
+        this.modifiers.keySet().forEach(modifier -> modifiers.addProperty(modifier, getParameter(modifier)));
+        object.add("Modifiers", modifiers);
+
+        return object;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbilityData that = (AbilityData) o;
+        return handler.equals(that.handler) && getTrigger().equals(that.getTrigger()) && hide == that.hide && modifiers.equals(that.modifiers);
+    }
+
+    @Override
+    public String toString() {
+        return "AbilityData{" +
+                "ability=" + handler +
+                ", triggerType=" + triggerType +
+                ", modifiers=" + modifiers +
+                ", hide=" + hide +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handler, triggerType, hide, modifiers);
+    }
+}
