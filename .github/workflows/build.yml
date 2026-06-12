@@ -5,7 +5,7 @@ on:
     branches: [ "master", "main" ]
   pull_request:
     branches: [ "master", "main" ]
-  workflow_dispatch:  # allow manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,6 +21,24 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+
+      # MMOInventory-API (optional) depends on a parent POM that is not publicly
+      # available. Install a minimal placeholder so Maven can resolve it.
+      - name: Install missing parent POM for MMOInventory
+        run: |
+          cat > /tmp/mmoinventory-pom.xml << 'EOF'
+          <project>
+            <modelVersion>4.0.0</modelVersion>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>MMOInventory</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <packaging>pom</packaging>
+          </project>
+          EOF
+          mvn install:install-file \
+            -Dfile=/tmp/mmoinventory-pom.xml \
+            -DpomFile=/tmp/mmoinventory-pom.xml \
+            --batch-mode --no-transfer-progress
 
       - name: Build with Maven
         run: mvn clean install -DskipTests --batch-mode --no-transfer-progress
