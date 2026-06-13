@@ -15,15 +15,25 @@ public class AdminLanguage {
 
     @NotNull
     public String text(@NotNull String path, @NotNull String fallback, @NotNull String... replacements) {
-        String translated = replace(ChatColor.translateAlternateColorCodes('&', file.computeTranslation(path, () -> fallback)), replacements);
+        return text(path, fallback, true, replacements);
+    }
+
+    @NotNull
+    public String text(@NotNull String path, @NotNull String fallback, boolean logMissing, @NotNull String... replacements) {
+        String translated = replace(ChatColor.translateAlternateColorCodes('&', file.computeTranslation(path, () -> fallback, logMissing)), replacements);
         file.save();
         return translated;
     }
 
     @NotNull
     public List<String> list(@NotNull String path, @NotNull List<String> fallback, @NotNull String... replacements) {
+        return list(path, fallback, true, replacements);
+    }
+
+    @NotNull
+    public List<String> list(@NotNull String path, @NotNull List<String> fallback, boolean logMissing, @NotNull String... replacements) {
         List<String> translated = new ArrayList<>();
-        for (String line : file.computeList(path, () -> fallback))
+        for (String line : file.computeList(path, () -> fallback, logMissing))
             translated.add(textColors(replace(line, replacements)));
         file.save();
         return translated;

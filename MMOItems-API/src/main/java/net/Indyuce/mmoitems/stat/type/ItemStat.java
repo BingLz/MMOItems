@@ -205,12 +205,12 @@ public abstract class ItemStat<R extends RandomStatData<S>, S extends StatData> 
 
     @NotNull
     public String getEditorName() {
-        return MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-labels." + getPath() + ".name", name);
+        return MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-labels." + getPath() + ".name", name, false);
     }
 
     @NotNull
     public String[] getEditorLore() {
-        return MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-labels." + getPath() + ".lore", Arrays.asList(lore)).toArray(new String[0]);
+        return MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-labels." + getPath() + ".lore", Arrays.asList(lore), false).toArray(new String[0]);
     }
 
     /**

@@ -109,10 +109,54 @@ commands:
     no-item-for-type: "类型 '{type}' 下没有 ID 为 '{id}' 的物品"
 
 stat-labels:
+  revision-id:
+    name: '版本 ID'
+    lore:
+      - '用于判断物品是否需要更新。'
   material:
     name: '材质'
     lore:
       - '原版物品材质。'
+  item-damage:
+    name: '物品损伤'
+    lore:
+      - '默认物品损伤值，不影响最大耐久。'
+  custom-model-data:
+    name: '自定义模型数据'
+    lore:
+      - '用于资源包模型的 CustomModelData。'
+  custom-model-data-strings:
+    name: '自定义模型字符串'
+    lore:
+      - '用于组件模型的字符串列表。'
+  custom-model-data-floats:
+    name: '自定义模型浮点数'
+    lore:
+      - '用于组件模型的浮点数列表。'
+  model:
+    name: '物品模型'
+    lore:
+      - '设置物品使用的模型。'
+  equippable-slot:
+    name: '可装备槽位'
+    lore:
+      - '设置物品可装备的槽位。'
+  equippable-model:
+    name: '可装备模型'
+    lore:
+      - '设置装备时显示的模型。'
+  max-durability:
+    name: '最大耐久'
+    lore:
+      - '设置物品最大耐久。'
+  max-item-damage:
+    name: '最大物品损伤'
+    lore:
+      - '设置物品可承受的最大损伤。'
+  will-break:
+    name: '损坏时破碎'
+    lore:
+      - '达到耐久上限时是否破碎。'
   name:
     name: '显示名称'
     lore:
@@ -121,14 +165,126 @@ stat-labels:
     name: '描述文本'
     lore:
       - '物品自定义 lore。'
+  custom-nbt:
+    name: '自定义 NBT'
+    lore:
+      - '添加自定义 NBT 标签。'
+  max-stack-size:
+    name: '最大堆叠数量'
+    lore:
+      - '设置物品最大堆叠数量。'
+  can-break:
+    name: '可破坏方块'
+    lore:
+      - '冒险模式下该物品可破坏的方块。'
+  lore-format:
+    name: 'Lore 格式'
+    lore:
+      - '指定该物品使用的 lore 布局。'
+  tooltip:
+    name: '工具提示'
+    lore:
+      - '控制物品工具提示显示。'
+  tooltip-style:
+    name: '工具提示样式'
+    lore:
+      - '设置物品工具提示样式。'
   displayed-type:
     name: '显示类型'
     lore:
       - '覆盖 lore 中显示的物品类型。'
+  enchants:
+    name: '附魔'
+    lore:
+      - '物品拥有的附魔。'
+  hide-enchants:
+    name: '隐藏附魔'
+    lore:
+      - '隐藏物品附魔显示。'
+  hide-tooltip:
+    name: '隐藏工具提示'
+    lore:
+      - '隐藏物品工具提示。'
+  permission:
+    name: '权限'
+    lore:
+      - '使用该物品所需的权限。'
+  item-particles:
+    name: '物品粒子'
+    lore:
+      - '物品显示的粒子效果。'
+  arrow-particles:
+    name: '箭矢粒子'
+    lore:
+      - '箭矢显示的粒子效果。'
+  projectile-particles:
+    name: '弹射物粒子'
+    lore:
+      - '弹射物显示的粒子效果。'
   tier:
     name: '物品品质'
     lore:
       - '该物品的品质。'
+  set:
+    name: '物品套装'
+    lore:
+      - '该物品所属的套装。'
+  disable-interaction:
+    name: '禁用交互'
+    lore:
+      - '禁用不需要的交互，例如放置或使用。'
+  disable-crafting:
+    name: '禁用合成'
+    lore:
+      - '玩家不能用该物品合成。'
+  disable-smelting:
+    name: '禁用烧炼'
+    lore:
+      - '玩家不能把该物品放入熔炉。'
+  disable-smithing:
+    name: '禁用锻造'
+    lore:
+      - '玩家不能在锻造台中使用该物品。'
+  disable-enchanting:
+    name: '禁用附魔'
+    lore:
+      - '玩家不能附魔该物品。'
+  disable-repairing:
+    name: '禁用修复'
+    lore:
+      - '玩家不能在铁砧中使用该物品。'
+  disable-arrow-shooting:
+    name: '禁用射箭'
+    lore:
+      - '玩家不能用弓射出该箭矢。'
+  disable-droping:
+    name: '禁用丢弃'
+    lore:
+      - '禁止丢弃该物品。'
+  disable-arrow-consumption:
+    name: '禁用箭矢消耗'
+    lore:
+      - '禁用箭矢需求和消耗。'
+  on-left-click:
+    name: '左键动作'
+    lore:
+      - '左键点击时执行的动作。'
+  on-right-click:
+    name: '右键动作'
+    lore:
+      - '右键点击时执行的动作。'
+  disable-attack-passive:
+    name: '禁用命中效果'
+    lore:
+      - '禁用物品类型提供的命中效果。'
+  required-level:
+    name: '等级需求'
+    lore:
+      - '使用该物品所需的等级。'
+  required-class:
+    name: '职业需求'
+    lore:
+      - '使用该物品所需的职业。'
   attack-damage:
     name: '攻击伤害'
     lore:
@@ -147,6 +303,16 @@ stat-labels:
     lore:
       - '武器暴击造成的额外伤害。'
       - '单位为百分比。'
+  skill-critical-strike-chance:
+    name: '技能暴击率'
+    lore:
+      - '技能造成暴击的概率。'
+      - '单位为百分比。'
+  skill-critical-strike-power:
+    name: '技能暴击伤害'
+    lore:
+      - '技能暴击造成的额外伤害。'
+      - '单位为百分比。'
   range:
     name: '攻击范围'
     lore:
@@ -159,6 +325,86 @@ stat-labels:
     name: '耐力消耗'
     lore:
       - '使用武器时消耗的耐力。'
+  arrow-velocity:
+    name: '箭矢速度'
+    lore:
+      - '决定武器射出的箭矢速度。'
+  pve-damage:
+    name: 'PvE 伤害'
+    lore:
+      - '对非玩家实体造成的额外伤害。'
+  pvp-damage:
+    name: 'PvP 伤害'
+    lore:
+      - '对玩家造成的额外伤害。'
+  blunt-power:
+    name: '钝击范围'
+    lore:
+      - '范围伤害的半径。'
+  blunt-rating:
+    name: '钝击概率'
+    lore:
+      - '触发范围伤害的概率。'
+  weapon-damage:
+    name: '武器伤害'
+    lore:
+      - '额外命中武器伤害。'
+  skill-damage:
+    name: '技能伤害'
+    lore:
+      - '额外技能伤害。'
+  projectile-damage:
+    name: '弹射物伤害'
+    lore:
+      - '额外技能或武器弹射物伤害。'
+  magic-damage:
+    name: '魔法伤害'
+    lore:
+      - '额外魔法技能伤害。'
+  physical-damage:
+    name: '物理伤害'
+    lore:
+      - '额外技能或武器物理伤害。'
+  defense:
+    name: '防御'
+    lore:
+      - '降低来自任意来源的伤害。'
+  damage-reduction:
+    name: '伤害减免'
+    lore:
+      - '按百分比降低受到的伤害。'
+  fall-damage-reduction:
+    name: '摔落伤害减免'
+    lore:
+      - '降低摔落伤害。'
+  fire-damage-reduction:
+    name: '火焰伤害减免'
+    lore:
+      - '降低火焰伤害。'
+  magic-damage-reduction:
+    name: '魔法伤害减免'
+    lore:
+      - '降低魔法伤害。'
+  projectile-damage-reduction:
+    name: '弹射物伤害减免'
+    lore:
+      - '降低弹射物伤害。'
+  physical-damage-reduction:
+    name: '物理伤害减免'
+    lore:
+      - '降低物理伤害。'
+  pve-damage-reduction:
+    name: 'PvE 伤害减免'
+    lore:
+      - '降低怪物造成的伤害。'
+  pvp-damage-reduction:
+    name: 'PvP 伤害减免'
+    lore:
+      - '降低玩家造成的伤害。'
+  undead-damage:
+    name: '不死生物伤害'
+    lore:
+      - '对不死生物造成额外伤害。'
   armor:
     name: '护甲'
     lore:

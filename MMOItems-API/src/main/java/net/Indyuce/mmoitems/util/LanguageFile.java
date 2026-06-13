@@ -23,11 +23,17 @@ public class LanguageFile extends ConfigFile {
 
     @NotNull
     public String computeTranslation(String path, Supplier<String> defaultTranslation) {
+        return computeTranslation(path, defaultTranslation, true);
+    }
+
+    @NotNull
+    public String computeTranslation(String path, Supplier<String> defaultTranslation, boolean logMissing) {
         @Nullable String found = getConfig().getString(path);
         if (found == null) {
             change = true;
             getConfig().set(path, found = defaultTranslation.get());
-            MMOItems.plugin.getLogger().log(Level.SEVERE, "Could not find translation for '" + path + "', generating it");
+            if (logMissing)
+                MMOItems.plugin.getLogger().log(Level.SEVERE, "Could not find translation for '" + path + "', generating it");
         }
 
         return found;
@@ -35,10 +41,16 @@ public class LanguageFile extends ConfigFile {
 
     @NotNull
     public List<String> computeList(String path, Supplier<List<String>> defaultTranslation) {
+        return computeList(path, defaultTranslation, true);
+    }
+
+    @NotNull
+    public List<String> computeList(String path, Supplier<List<String>> defaultTranslation, boolean logMissing) {
         if (!getConfig().isList(path)) {
             change = true;
             getConfig().set(path, defaultTranslation.get());
-            MMOItems.plugin.getLogger().log(Level.SEVERE, "Could not find translation list for '" + path + "', generating it");
+            if (logMissing)
+                MMOItems.plugin.getLogger().log(Level.SEVERE, "Could not find translation list for '" + path + "', generating it");
         }
 
         return getConfig().getStringList(path);
