@@ -10,9 +10,9 @@ Official repository for MMOItems
 
 ### 简体中文管理端语言包
 
-插件内置了简体中文管理端语言文件，用于汉化游戏内编辑器、常用管理提示和命令参数错误。要启用它，请先备份服务器中的 `plugins/MMOItems/language/admin.yml`，然后把 JAR 内或源码中的 `default/language/Chinese Simplified/admin.yml` 复制为 `plugins/MMOItems/language/admin.yml`，最后在服务器内执行 `/mi reload`。
+插件默认生成简体中文管理端语言文件 `plugins/MMOItems/language/admin.yml`，用于汉化游戏内编辑器、常用管理提示和命令参数错误。如果你已经生成过旧的英文 `admin.yml`，请先备份并删除它，再重启服务器或执行 `/mi reload` 让插件重新生成。
 
-`admin.yml` 只翻译管理员看到的 GUI、聊天编辑提示和错误消息；物品 ID、类型 ID、stat ID、命令参数和配置路径会保持英文/内部格式，避免破坏已有配置和脚本。
+`admin.yml` 只翻译管理员看到的 GUI、聊天编辑提示和错误消息；物品 ID、类型 ID、stat ID、命令参数和配置路径会保持内部格式，避免破坏已有配置和脚本。
 
 ### Using MMOItems as dependency
 
