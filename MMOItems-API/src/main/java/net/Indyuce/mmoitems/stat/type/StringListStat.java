@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +84,7 @@ public class StringListStat extends ItemStat<StringListData, StringListData> {
     @Override
     public void whenClicked(@NotNull EditionInventory inv, @NotNull InventoryClickEvent event) {
         if (event.getAction() == InventoryAction.PICKUP_ALL)
-            new StatEdition(inv, this).enable("Write in the chat the line you want to add.");
+            new StatEdition(inv, this).enable(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.string-list.prompt", "Write in the chat the line you want to add.", "{stat}", getEditorName()));
 
         if (event.getAction() == InventoryAction.PICKUP_HALF && inv.getEditedSection().contains(getPath())) {
             List<String> list = inv.getEditedSection().getStringList(getPath());
@@ -95,7 +96,7 @@ public class StringListStat extends ItemStat<StringListData, StringListData> {
             inv.getEditedSection().set(getPath(), list.isEmpty() ? null : list);
             inv.registerTemplateEdition();
             inv.getPlayer()
-                    .sendMessage(MMOItems.plugin.getPrefix() + "Successfully removed '" + MythicLib.plugin.parseColors(last) + ChatColor.GRAY + "'.");
+                    .sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.string-list.removed-line", "Successfully removed '{value}'.", "{value}", MythicLib.plugin.parseColors(last) + ChatColor.GRAY));
         }
     }
 
@@ -105,7 +106,7 @@ public class StringListStat extends ItemStat<StringListData, StringListData> {
         list.add(message);
         inv.getEditedSection().set(getPath(), list);
         inv.registerTemplateEdition();
-        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + getName() + " Stat successfully added.");
+        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.string-list.added", "{stat} stat successfully added.", "{stat}", getEditorName()));
     }
 
     @Override

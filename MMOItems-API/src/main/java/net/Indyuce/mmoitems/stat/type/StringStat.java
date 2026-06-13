@@ -60,9 +60,9 @@ public class StringStat extends ItemStat<StringData, StringData> {
         if (event.getAction() == InventoryAction.PICKUP_HALF) {
             inv.getEditedSection().set(getPath(), null);
             inv.registerTemplateEdition();
-            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Successfully removed " + getName() + ".");
+            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.removed", "Successfully removed {stat}.", "{stat}", getEditorName()));
         } else
-            new StatEdition(inv, this).enable("Write in the chat the text you want.");
+            new StatEdition(inv, this).enable(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.string.prompt", "Write in the chat the text you want.", "{stat}", getEditorName()));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class StringStat extends ItemStat<StringData, StringData> {
         inv.getEditedSection().set(getPath(), message);
         inv.registerTemplateEdition();
         inv.getPlayer().sendMessage(
-                MMOItems.plugin.getPrefix() + getName() + " successfully changed to '" + MythicLib.plugin.parseColors(message) + ChatColor.GRAY + "'.");
+                MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.string.changed", "{stat} successfully changed to '{value}'.", "{stat}", getEditorName(), "{value}", MythicLib.plugin.parseColors(message) + ChatColor.GRAY));
     }
 
     @Override

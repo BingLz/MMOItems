@@ -4,17 +4,33 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.AltChar;
 import io.lumine.mythic.lib.gui.Navigator;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.gui.edition.EditionInventory;
 import net.Indyuce.mmoitems.util.MMOUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 @Deprecated
 public abstract class MMOItemsInventory extends PluginInventory {
+    protected static final NamespacedKey ACTION_KEY = new NamespacedKey(MMOItems.plugin, "gui_action");
+
     public MMOItemsInventory(Navigator navigator) {
         super(navigator);
+    }
+
+    protected void setAction(ItemStack item, String action) {
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(ACTION_KEY, PersistentDataType.STRING, action);
+        item.setItemMeta(meta);
+    }
+
+    protected String getAction(ItemStack item) {
+        return MMOUtils.isMetaItem(item, false) ? item.getItemMeta().getPersistentDataContainer().get(ACTION_KEY, PersistentDataType.STRING) : null;
     }
 
     // DEPRECATED code fix when merging with MI7
@@ -26,11 +42,11 @@ public abstract class MMOItemsInventory extends PluginInventory {
 
         // if inventory is edition inventory
         // then the player can click specific items
-        if (!(this instanceof EditionInventory) || event.getInventory() != event.getClickedInventory() || !MMOUtils.isMetaItem(item, false)
-                || !item.getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + ""))
+        if (!(this instanceof EditionInventory) || event.getInventory() != event.getClickedInventory() || !MMOUtils.isMetaItem(item, false))
             return;
 
-        if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + AltChar.fourEdgedClub + " Get the Item! " + AltChar.fourEdgedClub)) {
+        String action = getAction(item);
+        if ("get_item".equals(action) || item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + AltChar.fourEdgedClub + " Get the Item! " + AltChar.fourEdgedClub)) {
 
             // simply give the item if left click
             if (event.getAction() == InventoryAction.PICKUP_ALL) {
@@ -55,7 +71,7 @@ public abstract class MMOItemsInventory extends PluginInventory {
         }
 
         // Back Button
-        if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + AltChar.rightArrow + " Back"))
+        if ("back".equals(action) || item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + AltChar.rightArrow + " Back"))
             getNavigator().popOpen();
     }
 

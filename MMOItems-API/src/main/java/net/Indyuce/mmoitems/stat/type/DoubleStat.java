@@ -28,6 +28,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
@@ -297,11 +299,13 @@ public class DoubleStat extends ItemStat<NumericStatFormula, DoubleData> impleme
         if (event.getAction() == InventoryAction.PICKUP_HALF) {
             inv.getEditedSection().set(getPath(), null);
             inv.registerTemplateEdition();
-            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Successfully removed " + getName() + ChatColor.GRAY + ".");
+            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.removed", "Successfully removed {stat}.", "{stat}", getEditorName()));
             return;
         }
-        new StatEdition(inv, this).enable("Write in the chat the numeric value you want.",
-                "Second Format: {Base} {Scaling Value} {Spread} {Max Spread} {Hard Min} {Hard Max}", "Third Format: {Min Value} -> {Max Value}");
+        new StatEdition(inv, this).enable(MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-editor.double.prompt", Arrays.asList(
+                "Write in the chat the numeric value you want.",
+                "Second Format: {Base} {Scaling Value} {Spread} {Max Spread} {Hard Min} {Hard Max}",
+                "Third Format: {Min Value} -> {Max Value}"), "{stat}", getEditorName()).toArray(new String[0]));
     }
 
     @Override
@@ -309,9 +313,9 @@ public class DoubleStat extends ItemStat<NumericStatFormula, DoubleData> impleme
         final NumericStatFormula formula = new NumericStatFormula(message);
         formula.fillConfigurationSection(inv.getEditedSection(), getPath(), NumericStatFormula.FormulaSaveOption.DELETE_IF_ZERO);
         inv.registerTemplateEdition();
-        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + getName() + " successfully changed to {"
+        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.changed", "{stat} successfully changed to {value}", "{stat}", getEditorName(), "{value}", "{"
                 + formula.getBase() + " - " + formula.getScale() + " - " + formula.getSpread() + " - " + formula.getMaxSpread() + " - ("
-                + formula.getMin() + " -> " + formula.getMax() + ") }");
+                + formula.getMin() + " -> " + formula.getMax() + ") }"));
     }
 
     @Override
@@ -319,24 +323,23 @@ public class DoubleStat extends ItemStat<NumericStatFormula, DoubleData> impleme
         if (statData.isPresent()) {
             NumericStatFormula data = statData.get();
             if (data.isUniform()) {
-                lore.add(ChatColor.GRAY + "Uniform: " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getMin()) + ChatColor.GRAY + " -> " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getMax()));
+                lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.uniform", ChatColor.GRAY + "Uniform: " + ChatColor.GREEN + "{min}" + ChatColor.GRAY + " -> " + ChatColor.GREEN + "{max}", "{min}", DECIMAL_FORMAT.format(data.getMin()), "{max}", DECIMAL_FORMAT.format(data.getMax())));
             } else {
-                lore.add(ChatColor.GRAY + "Base Value: " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getBase())
-                        + (data.getScale() != 0 ? ChatColor.GRAY + " (+" + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getScale()) + ChatColor.GRAY + "/Lvl)" : ""));
+                lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.base-value", ChatColor.GRAY + "Base Value: " + ChatColor.GREEN + "{base}{scale}", "{base}", DECIMAL_FORMAT.format(data.getBase()), "{scale}", data.getScale() != 0 ? ChatColor.GRAY + " (+" + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getScale()) + ChatColor.GRAY + "/Lvl)" : ""));
                 if (data.getSpread() > 0)
-                    lore.add(ChatColor.GRAY + "Spread: " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getSpread() * 100) + "%" + ChatColor.GRAY + " (Max: "
-                            + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getMaxSpread() * 100) + "%" + ChatColor.GRAY + ")");
+                    lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.spread", ChatColor.GRAY + "Spread: " + ChatColor.GREEN + "{spread}%" + ChatColor.GRAY + " (Max: " + ChatColor.GREEN + "{max-spread}%" + ChatColor.GRAY + ")", "{spread}", DECIMAL_FORMAT.format(data.getSpread() * 100), "{max-spread}", DECIMAL_FORMAT.format(data.getMaxSpread() * 100)));
                 if (data.hasMin())
-                    lore.add(ChatColor.GRAY + "Min: " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getMin()));
+                    lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.min", ChatColor.GRAY + "Min: " + ChatColor.GREEN + "{value}", "{value}", DECIMAL_FORMAT.format(data.getMin())));
                 if (data.hasMax())
-                    lore.add(ChatColor.GRAY + "Max: " + ChatColor.GREEN + DECIMAL_FORMAT.format(data.getMax()));
+                    lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.double.max", ChatColor.GRAY + "Max: " + ChatColor.GREEN + "{value}", "{value}", DECIMAL_FORMAT.format(data.getMax())));
             }
         } else
-            lore.add(ChatColor.GRAY + "Current Value: " + ChatColor.GREEN + "---");
+            lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.current-value", ChatColor.GRAY + "Current Value: " + ChatColor.GREEN + "{value}", "{value}", "---"));
 
         lore.add("");
-        lore.add(ChatColor.YELLOW + AltChar.listDash + " Left click to change this value.");
-        lore.add(ChatColor.YELLOW + AltChar.listDash + " Right click to remove this value.");
+        lore.addAll(MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-editor.common.change-remove-lore", Arrays.asList(
+                ChatColor.YELLOW + AltChar.listDash + " Left click to change this value.",
+                ChatColor.YELLOW + AltChar.listDash + " Right click to remove this value.")));
     }
 
     @Override

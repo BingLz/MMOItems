@@ -45,11 +45,11 @@ public class StatEdition implements Edition {
 		inv.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.STRIKETHROUGH + "-----------------------------------------------------");
 		for (String line : message)
 			inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', line));
-		inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Type 'cancel' to abort editing.");
+		inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.cancel", "Type 'cancel' to abort editing."));
 
 		// Default chat edition feature
 		new ChatEdition(this);
-		inv.getPlayer().sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "Item Edition", "See chat.", 10, 40, 10);
+		inv.getPlayer().sendTitle(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.title", ChatColor.GOLD + "" + ChatColor.BOLD + "Item Edition"), MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.subtitle", "See chat."), 10, 40, 10);
 	}
 
 	@Override

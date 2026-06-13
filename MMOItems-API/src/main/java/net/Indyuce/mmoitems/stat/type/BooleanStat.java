@@ -1,6 +1,7 @@
 package net.Indyuce.mmoitems.stat.type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,7 +82,7 @@ public class BooleanStat extends ItemStat<RandomBooleanData, BooleanData> {
 		}
 
 		else if (event.getAction() == InventoryAction.PICKUP_HALF)
-			new StatEdition(inv, this).enable("Write in the chat the probability you want (a percentage)");
+			new StatEdition(inv, this).enable(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.boolean.prompt", "Write in the chat the probability you want (a percentage)", "{stat}", getEditorName()));
 	}
 
 	@Override
@@ -92,8 +93,8 @@ public class BooleanStat extends ItemStat<RandomBooleanData, BooleanData> {
 
 		inv.getEditedSection().set(getPath(), probability / 100);
 		inv.registerTemplateEdition();
-		inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + getName() + " successfully changed to " + ChatColor.GREEN
-				+ MythicLib.plugin.getMMOConfig().decimal.format(probability) + "% Chance" + ChatColor.GRAY + ".");
+		inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.boolean.changed", "{stat} successfully changed to {value}", "{stat}", getEditorName(), "{value}", ChatColor.GREEN
+				+ MythicLib.plugin.getMMOConfig().decimal.format(probability) + "% Chance" + ChatColor.GRAY + "."));
 	}
 
 	@Override
@@ -138,15 +139,17 @@ public class BooleanStat extends ItemStat<RandomBooleanData, BooleanData> {
 
 		if (statData.isPresent()) {
 			final double chance = statData.get().getChance();
-			lore.add(ChatColor.GRAY + "Current Value: " + (chance >= 1 ? ChatColor.GREEN + "True"
-					: chance <= 0 ? ChatColor.RED + "False" : ChatColor.GREEN + MythicLib.plugin.getMMOConfig().decimal.format(chance * 100) + "% Chance"));
+			String value = chance >= 1 ? ChatColor.GREEN + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.true", "True")
+					: chance <= 0 ? ChatColor.RED + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.false", "False") : ChatColor.GREEN + MythicLib.plugin.getMMOConfig().decimal.format(chance * 100) + "% Chance";
+			lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.current-value", ChatColor.GRAY + "Current Value: {value}", "{value}", value));
 
 		} else
-			lore.add(ChatColor.GRAY + "Current Value: " + ChatColor.RED + "False");
+			lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.current-value", ChatColor.GRAY + "Current Value: {value}", "{value}", ChatColor.RED + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.false", "False")));
 
 		lore.add("");
-		lore.add(ChatColor.YELLOW + AltChar.listDash + " Left click to switch this value.");
-		lore.add(ChatColor.YELLOW + AltChar.listDash + " Right click to choose a probability to have this option.");
+		lore.addAll(MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-editor.boolean.actions-lore", Arrays.asList(
+				ChatColor.YELLOW + AltChar.listDash + " Left click to switch this value.",
+				ChatColor.YELLOW + AltChar.listDash + " Right click to choose a probability to have this option.")));
 	}
 
 	@NotNull

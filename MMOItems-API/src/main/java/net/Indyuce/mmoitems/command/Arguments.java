@@ -20,7 +20,7 @@ public class Arguments {
             (explorer, list) -> MMOItems.plugin.getTypes().getAll().forEach(type -> list.add(type.getId())),
             (explorer, input) -> {
                 final var type = Type.get(UtilityMethods.enumName(input));
-                if (type == null) throw new ArgumentParseException("No such item type '" + input + "'");
+                if (type == null) throw new ArgumentParseException(MMOItems.plugin.getLanguage().getAdminLanguage().text("commands.errors.no-item-type", "No such item type '{input}'", "{input}", input));
                 return type;
             });
 
@@ -32,7 +32,7 @@ public class Arguments {
         if (type == null) throw new IllegalStateException("Error, could not parse previous arg");
         var itemId = UtilityMethods.enumName(input);
         var template = MMOItems.plugin.getTemplates().getTemplate(type, itemId);
-        if (template == null) throw new ArgumentParseException("Could not find template with ID '" + itemId + "'");
+        if (template == null) throw new ArgumentParseException(MMOItems.plugin.getLanguage().getAdminLanguage().text("commands.errors.no-template", "Could not find template with ID '{id}'", "{id}", itemId));
         return template;
     });
 
@@ -40,7 +40,7 @@ public class Arguments {
             (explorer, list) -> MMOItems.plugin.getStats().getAll().forEach(stat -> list.add(stat.getId())),
             (explorer, input) -> {
                 final var stat = MMOItems.plugin.getStats().get(UtilityMethods.enumName(input));
-                if (stat == null) throw new ArgumentParseException("Could not find stat with ID '" + input + "'");
+                if (stat == null) throw new ArgumentParseException(MMOItems.plugin.getLanguage().getAdminLanguage().text("commands.errors.no-stat", "Could not find stat with ID '{id}'", "{id}", input));
                 return stat;
             });
 
@@ -48,7 +48,7 @@ public class Arguments {
             (explorer, list) -> Bukkit.getWorlds().forEach(world -> list.add(world.getName())),
             (explorer, input) -> {
                 var world = Bukkit.getWorld(input);
-                if (world == null) throw new ArgumentParseException("World " + input + " not found");
+                if (world == null) throw new ArgumentParseException(MMOItems.plugin.getLanguage().getAdminLanguage().text("commands.errors.no-world", "World {world} not found", "{world}", input));
                 return world;
             });
 
@@ -68,7 +68,7 @@ public class Arguments {
         try {
             return MMOItems.plugin.getTemplates().getTemplateOrThrow(type, id);
         } catch (Exception exception) {
-            throw new ArgumentParseException("No item with ID '" + id + "' for type '" + type.getId() + "'");
+            throw new ArgumentParseException(MMOItems.plugin.getLanguage().getAdminLanguage().text("commands.errors.no-item-for-type", "No item with ID '{id}' for type '{type}'", "{id}", id, "{type}", type.getId()));
         }
     }
 }

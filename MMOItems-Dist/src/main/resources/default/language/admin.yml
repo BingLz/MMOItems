@@ -1,0 +1,206 @@
+# Admin/editor language file.
+# This file localizes in-game admin GUIs, command errors, chat edition prompts,
+# and item stat labels shown in the editor. Internal IDs and command arguments
+# are intentionally not translated.
+
+gui:
+  common:
+    next-page: '&aNext Page'
+    previous-page: '&aPrevious Page'
+    back: '&a➥ Back'
+    no-type: '&c- No type -'
+    no-item: '&c- No Item -'
+    error: '&c- Error -'
+  type-browser:
+    title: 'Type Browser'
+    browse-name: '&a{type}&8 (click to browse)'
+    item-count-lore:
+      - '&7&oThere are &6&o{count} &7&oitems in this type.'
+  item-browser:
+    title: 'Item Explorer: {type}'
+    delete-title: 'Delete Mode: {type}'
+    error-lore:
+      - '&7&oAn error occurred while'
+      - '&7&otrying to generate that item.'
+    create-new: '&aCreate New'
+    delete-item: '&cDelete Item'
+    cancel-deletion: '&cCancel Deletion'
+    download-resourcepack:
+      name: '&aDownload Default Resourcepack'
+      lore:
+        - '&dOnly seeing stone blocks?'
+        - ''
+        - '&cBy downloading the default resourcepack you can'
+        - '&cedit the blocks however you want.'
+        - '&cYou will still have to add it to your server!'
+    item-actions-lore:
+      - '&e▪ Left click to obtain this item.'
+      - '&e▪ Right click to edit this item.'
+    click-delete-lore: '&c✖ CLICK TO DELETE ✖'
+    delete-prefix: '&cDELETE: {item}'
+  edition:
+    get-item:
+      name: '&a✤ Get the Item! ✤'
+      lore:
+        - '&7'
+        - '&7You may also use /mi give {type} {id}'
+        - '&7'
+        - '&e▪ Left click to get the item.'
+        - '&e▪ Right click to reroll its stats.'
+  item-edition:
+    title: 'Item Edition: {id}'
+    no-stat: '&c- No Item Stat -'
+    no-stat-permission: '&cYou are lacking permission to edit this stat.'
+
+new-item:
+  prompt: 'Write in the chat the ID of the new item.'
+  cancel: "Type 'cancel' to abort."
+  title: '&6&lItem Creation'
+  subtitle: 'See chat.'
+
+stat-editor:
+  title: '&6&lItem Edition'
+  subtitle: 'See chat.'
+  common:
+    cancel: "Type 'cancel' to abort editing."
+    current-value: '&7Current Value: {value}'
+    true: 'True'
+    false: 'False'
+    none: 'None'
+    removed: 'Successfully removed {stat}.'
+    change-remove-lore:
+      - '&e▪ Left click to change this value.'
+      - '&e▪ Right click to remove this value.'
+  double:
+    prompt:
+      - 'Write in the chat the numeric value you want.'
+      - 'Second Format: {Base} {Scaling Value} {Spread} {Max Spread} {Hard Min} {Hard Max}'
+      - 'Third Format: {Min Value} -> {Max Value}'
+    changed: '{stat} successfully changed to {value}'
+    uniform: '&7Uniform: &a{min}&7 -> &a{max}'
+    base-value: '&7Base Value: &a{base}{scale}'
+    spread: '&7Spread: &a{spread}%&7 (Max: &a{max-spread}%&7)'
+    min: '&7Min: &a{value}'
+    max: '&7Max: &a{value}'
+  boolean:
+    prompt: 'Write in the chat the probability you want (a percentage)'
+    changed: '{stat} successfully changed to {value}'
+    actions-lore:
+      - '&e▪ Left click to switch this value.'
+      - '&e▪ Right click to choose a probability to have this option.'
+  string:
+    prompt: 'Write in the chat the text you want.'
+    changed: "{stat} successfully changed to '{value}'."
+  string-list:
+    prompt: 'Write in the chat the line you want to add.'
+    removed-line: "Successfully removed '{value}'."
+    added: '{stat} stat successfully added.'
+  choose:
+    changed: '{stat} successfully changed to {value}.'
+    actions-lore:
+      - '&e▪ Right click to return to default value.'
+      - '&e▪ Left click to cycle through the available options:'
+
+commands:
+  errors:
+    no-item-type: "No such item type '{input}'"
+    no-template: "Could not find template with ID '{id}'"
+    no-stat: "Could not find stat with ID '{id}'"
+    no-world: 'World {world} not found'
+    no-item-for-type: "No item with ID '{id}' for type '{type}'"
+
+stat-labels:
+  material:
+    name: 'Material'
+    lore:
+      - 'The vanilla item material.'
+  name:
+    name: 'Display Name'
+    lore:
+      - 'The item display name.'
+  lore:
+    name: 'Lore'
+    lore:
+      - 'The item custom lore.'
+  displayed-type:
+    name: 'Displayed Type'
+    lore:
+      - 'Overrides the item type shown in lore.'
+  tier:
+    name: 'Item Tier'
+    lore:
+      - 'The item tier.'
+  attack-damage:
+    name: 'Attack Damage'
+    lore:
+      - 'The weapon base attack damage.'
+  attack-speed:
+    name: 'Attack Speed'
+    lore:
+      - 'The weapon base attack speed.'
+  critical-strike-chance:
+    name: 'Critical Strike Chance'
+    lore:
+      - 'Critical strikes deal more damage.'
+      - 'In % chance.'
+  critical-strike-power:
+    name: 'Critical Strike Power'
+    lore:
+      - 'The extra damage weapon crits deal.'
+      - 'In %.'
+  range:
+    name: 'Range'
+    lore:
+      - 'The range of your item attacks.'
+  mana-cost:
+    name: 'Mana Cost'
+    lore:
+      - 'Mana spent by your weapon to be used.'
+  stamina-cost:
+    name: 'Stamina Cost'
+    lore:
+      - 'Stamina spent by your weapon to be used.'
+  armor:
+    name: 'Armor'
+    lore:
+      - 'Additional armor points.'
+  armor-toughness:
+    name: 'Armor Toughness'
+    lore:
+      - 'Additional armor toughness.'
+  max-health:
+    name: 'Max Health'
+    lore:
+      - 'Adds health to your max health bar.'
+  max-mana:
+    name: 'Max Mana'
+    lore:
+      - 'Adds mana to your max mana bar.'
+  max-stamina:
+    name: 'Max Stamina'
+    lore:
+      - 'Adds stamina to your max stamina bar.'
+  movement-speed:
+    name: 'Movement Speed'
+    lore:
+      - 'Modifies movement speed.'
+  two-handed:
+    name: 'Two Handed'
+    lore:
+      - 'Slows players holding another item with it.'
+  commands:
+    name: 'Commands'
+    lore:
+      - 'Commands run when using the item.'
+  abilities:
+    name: 'Abilities'
+    lore:
+      - 'Abilities cast by this item.'
+  gem-sockets:
+    name: 'Gem Sockets'
+    lore:
+      - 'Gem sockets available on the item.'
+  perm-effects:
+    name: 'Permanent Effects'
+    lore:
+      - 'Potion effects permanently granted.'

@@ -13,6 +13,7 @@ import net.Indyuce.mmoitems.api.util.NumericStatFormula;
 import net.Indyuce.mmoitems.api.util.message.Message;
 import net.Indyuce.mmoitems.stat.GemUpgradeScaling;
 import net.Indyuce.mmoitems.stat.LuteAttackEffectStat.LuteAttackEffect;
+import net.Indyuce.mmoitems.util.AdminLanguage;
 import net.Indyuce.mmoitems.util.LanguageFile;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -42,6 +43,7 @@ public class ConfigManager implements Reloadable {
     private ConfigFile loreFormat, dynLore;
 
     // Language
+    private AdminLanguage adminLanguage;
     private final Map<TriggerType, String> triggerTypeNames = new HashMap<>();
     private final Map<PotionEffectType, String> potionNames = new HashMap<>();
 
@@ -141,6 +143,9 @@ public class ConfigManager implements Reloadable {
      * These two steps are necessary for smooth language updates
      */
     private void loadTranslations() {
+
+        adminLanguage = new AdminLanguage();
+        adminLanguage.save();
 
         // TODO messages
         final LanguageFile messages = new LanguageFile("messages");
@@ -304,6 +309,11 @@ public class ConfigManager implements Reloadable {
         return Message.valueOf(UtilityMethods.enumName(path)).getFormatted();
     }
 
+    @NotNull
+    public AdminLanguage getAdminLanguage() {
+        return Objects.requireNonNull(adminLanguage, "Admin language file has not been loaded yet");
+    }
+
     @Deprecated
     @NotNull
     public String getCastingModeName(@NotNull TriggerType triggerType) {
@@ -382,6 +392,7 @@ public class ConfigManager implements Reloadable {
 
         // Default EN language files
         ABILITIES("language", "abilities"),
+        ADMIN("language", "admin"),
         ATTACK_EFFECTS("language", "attack-effects"),
         CRAFTING_STATIONS("language", "crafting-stations"),
         LORE_FORMAT("language", "lore-format"),

@@ -1,0 +1,205 @@
+# 管理端/编辑器语言文件。
+# 本文件用于汉化游戏内管理 GUI、指令错误、聊天编辑提示，
+# 以及编辑器中显示的物品属性名称与说明。内部 ID 与指令参数不会被翻译。
+
+gui:
+  common:
+    next-page: '&a下一页'
+    previous-page: '&a上一页'
+    back: '&a➥ 返回'
+    no-type: '&c- 无类型 -'
+    no-item: '&c- 无物品 -'
+    error: '&c- 错误 -'
+  type-browser:
+    title: '类型浏览器'
+    browse-name: '&a{type}&8（点击浏览）'
+    item-count-lore:
+      - '&7&o该类型下共有 &6&o{count} &7&o个物品。'
+  item-browser:
+    title: '物品浏览器：{type}'
+    delete-title: '删除模式：{type}'
+    error-lore:
+      - '&7&o生成该物品时'
+      - '&7&o发生了错误。'
+    create-new: '&a创建新物品'
+    delete-item: '&c删除物品'
+    cancel-deletion: '&c取消删除'
+    download-resourcepack:
+      name: '&a下载默认资源包'
+      lore:
+        - '&d只看到石头方块？'
+        - ''
+        - '&c下载默认资源包后，你可以'
+        - '&c按自己的需求编辑方块外观。'
+        - '&c你仍然需要把资源包添加到服务器！'
+    item-actions-lore:
+      - '&e▪ 左键获取该物品。'
+      - '&e▪ 右键编辑该物品。'
+    click-delete-lore: '&c✖ 点击删除 ✖'
+    delete-prefix: '&c删除：{item}'
+  edition:
+    get-item:
+      name: '&a✤ 获取物品！✤'
+      lore:
+        - '&7'
+        - '&7也可以使用 /mi give {type} {id}'
+        - '&7'
+        - '&e▪ 左键获取物品。'
+        - '&e▪ 右键重随属性。'
+  item-edition:
+    title: '物品编辑：{id}'
+    no-stat: '&c- 无可用属性 -'
+    no-stat-permission: '&c你没有权限编辑该属性。'
+
+new-item:
+  prompt: '请在聊天栏输入新物品的 ID。'
+  cancel: "输入 'cancel' 可取消。"
+  title: '&6&l物品创建'
+  subtitle: '请查看聊天栏。'
+
+stat-editor:
+  title: '&6&l物品编辑'
+  subtitle: '请查看聊天栏。'
+  common:
+    cancel: "输入 'cancel' 可取消编辑。"
+    current-value: '&7当前值：{value}'
+    true: '启用'
+    false: '禁用'
+    none: '无'
+    removed: '已移除 {stat}。'
+    change-remove-lore:
+      - '&e▪ 左键修改该值。'
+      - '&e▪ 右键移除该值。'
+  double:
+    prompt:
+      - '请在聊天栏输入你想设置的数值。'
+      - '第二种格式：{Base} {Scaling Value} {Spread} {Max Spread} {Hard Min} {Hard Max}'
+      - '第三种格式：{Min Value} -> {Max Value}'
+    changed: '{stat} 已修改为 {value}'
+    uniform: '&7固定范围：&a{min}&7 -> &a{max}'
+    base-value: '&7基础值：&a{base}{scale}'
+    spread: '&7波动：&a{spread}%&7（最大：&a{max-spread}%&7）'
+    min: '&7最小值：&a{value}'
+    max: '&7最大值：&a{value}'
+  boolean:
+    prompt: '请在聊天栏输入触发概率（百分比）。'
+    changed: '{stat} 已修改为 {value}'
+    actions-lore:
+      - '&e▪ 左键切换该值。'
+      - '&e▪ 右键设置该选项的触发概率。'
+  string:
+    prompt: '请在聊天栏输入你想设置的文本。'
+    changed: "{stat} 已修改为 '{value}'。"
+  string-list:
+    prompt: '请在聊天栏输入要添加的一行文本。'
+    removed-line: "已移除 '{value}'。"
+    added: '已添加 {stat}。'
+  choose:
+    changed: '{stat} 已修改为 {value}。'
+    actions-lore:
+      - '&e▪ 右键恢复默认值。'
+      - '&e▪ 左键在可用选项中切换：'
+
+commands:
+  errors:
+    no-item-type: "不存在物品类型 '{input}'"
+    no-template: "找不到 ID 为 '{id}' 的物品模板"
+    no-stat: "找不到 ID 为 '{id}' 的属性"
+    no-world: '找不到世界 {world}'
+    no-item-for-type: "类型 '{type}' 下没有 ID 为 '{id}' 的物品"
+
+stat-labels:
+  material:
+    name: '材质'
+    lore:
+      - '原版物品材质。'
+  name:
+    name: '显示名称'
+    lore:
+      - '物品显示名称。'
+  lore:
+    name: '描述文本'
+    lore:
+      - '物品自定义 lore。'
+  displayed-type:
+    name: '显示类型'
+    lore:
+      - '覆盖 lore 中显示的物品类型。'
+  tier:
+    name: '物品品质'
+    lore:
+      - '该物品的品质。'
+  attack-damage:
+    name: '攻击伤害'
+    lore:
+      - '武器基础攻击伤害。'
+  attack-speed:
+    name: '攻击速度'
+    lore:
+      - '武器基础攻击速度。'
+  critical-strike-chance:
+    name: '暴击率'
+    lore:
+      - '暴击会造成更多伤害。'
+      - '单位为百分比。'
+  critical-strike-power:
+    name: '暴击伤害'
+    lore:
+      - '武器暴击造成的额外伤害。'
+      - '单位为百分比。'
+  range:
+    name: '攻击范围'
+    lore:
+      - '物品攻击范围。'
+  mana-cost:
+    name: '法力消耗'
+    lore:
+      - '使用武器时消耗的法力。'
+  stamina-cost:
+    name: '耐力消耗'
+    lore:
+      - '使用武器时消耗的耐力。'
+  armor:
+    name: '护甲'
+    lore:
+      - '额外护甲值。'
+  armor-toughness:
+    name: '盔甲韧性'
+    lore:
+      - '额外盔甲韧性。'
+  max-health:
+    name: '生命上限'
+    lore:
+      - '增加生命上限。'
+  max-mana:
+    name: '法力上限'
+    lore:
+      - '增加法力上限。'
+  max-stamina:
+    name: '耐力上限'
+    lore:
+      - '增加耐力上限。'
+  movement-speed:
+    name: '移动速度'
+    lore:
+      - '修改移动速度。'
+  two-handed:
+    name: '双手持有'
+    lore:
+      - '与另一件物品同时持有时会使玩家减速。'
+  commands:
+    name: '指令'
+    lore:
+      - '使用物品时执行的指令。'
+  abilities:
+    name: '技能'
+    lore:
+      - '该物品可释放的技能。'
+  gem-sockets:
+    name: '宝石槽'
+    lore:
+      - '物品可用的宝石槽。'
+  perm-effects:
+    name: '永久效果'
+    lore:
+      - '永久给予的药水效果。'

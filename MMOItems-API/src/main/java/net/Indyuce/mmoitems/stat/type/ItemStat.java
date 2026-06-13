@@ -203,6 +203,16 @@ public abstract class ItemStat<R extends RandomStatData<S>, S extends StatData> 
         return name;
     }
 
+    @NotNull
+    public String getEditorName() {
+        return MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-labels." + getPath() + ".name", name);
+    }
+
+    @NotNull
+    public String[] getEditorLore() {
+        return MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-labels." + getPath() + ".lore", Arrays.asList(lore)).toArray(new String[0]);
+    }
+
     /**
      * The internal name of this ItemStat.
      * <p></p>

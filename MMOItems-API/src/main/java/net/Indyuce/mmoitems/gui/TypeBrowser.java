@@ -47,8 +47,10 @@ public class TypeBrowser extends MMOItemsInventory {
         int max = page * usedSlots.length;
         int n = 0;
 
+        var lang = MMOItems.plugin.getLanguage().getAdminLanguage();
+
         // Create inventory
-        Inventory inv = Bukkit.createInventory(this, 54, "Type Browser");
+        Inventory inv = Bukkit.createInventory(this, 54, lang.text("gui.type-browser.title", "Type Browser"));
 
         // Fetch the list of types
         for (int j = min; j < Math.min(max, itemTypes.size()); j++) {
@@ -68,10 +70,9 @@ public class TypeBrowser extends MMOItemsInventory {
                 VersionUtils.addEmptyAttributeModifier(meta);
                 meta.setMaxStackSize(maxStackSize);
             }
-            AdventureUtils.setDisplayName(meta, String.format("&a%s&8 (click to browse)", currentType.getName()));
+            AdventureUtils.setDisplayName(meta, lang.text("gui.type-browser.browse-name", "&a{type}&8 (click to browse)", "{type}", currentType.getName()));
             MMOUtils.fixAttributeLore(meta);
-            List<String> lore = new ArrayList<>();
-            lore.add(String.format("&7&oThere %s %s &7&oitem%s in this type.", items == 1 ? "is" : "are", items < 1 ? "&c&ono" : "&6&o" + items, items == 1 ? "" : "s"));
+            List<String> lore = lang.list("gui.type-browser.item-count-lore", List.of("&7&oThere are &6&o{count} &7&oitems in this type."), "{count}", String.valueOf(items));
             AdventureUtils.setLore(meta, lore);
             meta.getPersistentDataContainer().set(TYPE_ID_KEY, PersistentDataType.STRING, currentType.getId());
             item.setItemMeta(meta);
@@ -83,20 +84,22 @@ public class TypeBrowser extends MMOItemsInventory {
         // Fill remainder slots with 'No Type' notice
         ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
-        glassMeta.setDisplayName(ChatColor.RED + "- No type -");
+        glassMeta.setDisplayName(lang.text("gui.common.no-type", ChatColor.RED + "- No type -"));
         glass.setItemMeta(glassMeta);
 
         // Next Page
         ItemStack next = new ItemStack(Material.ARROW);
         ItemMeta nextMeta = next.getItemMeta();
-        nextMeta.setDisplayName(ChatColor.GREEN + "Next Page");
+        nextMeta.setDisplayName(lang.text("gui.common.next-page", ChatColor.GREEN + "Next Page"));
         next.setItemMeta(nextMeta);
+        setAction(next, "next_page");
 
         // Previous Page
         ItemStack previous = new ItemStack(Material.ARROW);
         ItemMeta previousMeta = previous.getItemMeta();
-        previousMeta.setDisplayName(ChatColor.GREEN + "Previous Page");
+        previousMeta.setDisplayName(lang.text("gui.common.previous-page", ChatColor.GREEN + "Previous Page"));
         previous.setItemMeta(previousMeta);
+        setAction(previous, "previous_page");
 
         // Fill
         while (n < SLOTS.length) {
@@ -118,13 +121,14 @@ public class TypeBrowser extends MMOItemsInventory {
 
         ItemStack item = event.getCurrentItem();
         if (MMOUtils.isMetaItem(item, false)) {
-            if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Next Page")) {
+            String action = getAction(item);
+            if ("next_page".equals(action)) {
                 page++;
                 open();
-            } else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Previous Page")) {
+            } else if ("previous_page".equals(action)) {
                 page--;
                 open();
-            } else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Download Default Resourcepack")) {
+            } else if ("download_resourcepack".equals(action)) {
                 MythicLib.plugin.getVersion().getWrapper().sendJson(getPlayer(),
                         "[{\"text\":\"Click to download!\",\"color\":\"green\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + CUSTOM_RP_DOWNLOAD_LINK + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":[\"\",{\"text\":\"Click to download via Dropbox\",\"italic\":true,\"color\":\"white\"}]}}]");
                 getPlayer().closeInventory();

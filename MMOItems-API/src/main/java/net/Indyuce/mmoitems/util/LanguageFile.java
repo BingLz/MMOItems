@@ -5,6 +5,7 @@ import net.Indyuce.mmoitems.api.ConfigFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -30,6 +31,17 @@ public class LanguageFile extends ConfigFile {
         }
 
         return found;
+    }
+
+    @NotNull
+    public List<String> computeList(String path, Supplier<List<String>> defaultTranslation) {
+        if (!getConfig().isList(path)) {
+            change = true;
+            getConfig().set(path, defaultTranslation.get());
+            MMOItems.plugin.getLogger().log(Level.SEVERE, "Could not find translation list for '" + path + "', generating it");
+        }
+
+        return getConfig().getStringList(path);
     }
 
     /**

@@ -182,21 +182,23 @@ public abstract class EditionInventory extends MMOItemsInventory {
         ItemStack get = new ItemStack(Material.CHEST);
         ItemMeta getMeta = get.getItemMeta();
         MMOUtils.fixAttributeLore(getMeta);
-        getMeta.setDisplayName(ChatColor.GREEN + AltChar.fourEdgedClub + " Get the Item! " + AltChar.fourEdgedClub);
-        List<String> getLore = new ArrayList<>();
-        getLore.add(ChatColor.GRAY + "");
-        getLore.add(ChatColor.GRAY + "You may also use /mi give " + template.getType().getId() + " " + template.getId());
-        getLore.add(ChatColor.GRAY + "");
-        getLore.add(ChatColor.YELLOW + AltChar.smallListDash + " Left click to get the item.");
-        getLore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to reroll its stats.");
+        getMeta.setDisplayName(MMOItems.plugin.getLanguage().getAdminLanguage().text("gui.edition.get-item.name", ChatColor.GREEN + AltChar.fourEdgedClub + " Get the Item! " + AltChar.fourEdgedClub));
+        List<String> getLore = MMOItems.plugin.getLanguage().getAdminLanguage().list("gui.edition.get-item.lore", Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "You may also use /mi give {type} {id}",
+                ChatColor.GRAY + "",
+                ChatColor.YELLOW + AltChar.smallListDash + " Left click to get the item.",
+                ChatColor.YELLOW + AltChar.smallListDash + " Right click to reroll its stats."), "{type}", template.getType().getId(), "{id}", template.getId());
         getMeta.setLore(getLore);
         get.setItemMeta(getMeta);
+        setAction(get, "get_item");
 
         if (displaysBack) {
             ItemStack back = new ItemStack(Material.BARRIER);
             ItemMeta backMeta = back.getItemMeta();
-            backMeta.setDisplayName(ChatColor.GREEN + AltChar.rightArrow + " Back");
+            backMeta.setDisplayName(MMOItems.plugin.getLanguage().getAdminLanguage().text("gui.common.back", ChatColor.GREEN + AltChar.rightArrow + " Back"));
             back.setItemMeta(backMeta);
+            setAction(back, "back");
 
             inventory.setItem(6, back);
         }

@@ -64,7 +64,7 @@ public abstract class ChooseStat extends StringStat {
             inv.registerTemplateEdition();
 
             // Mention that it was removed
-            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Successfully removed " + getName() + ".");
+            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.removed", "Successfully removed {stat}.", "{stat}", getEditorName()));
 
         } else {
 
@@ -81,7 +81,7 @@ public abstract class ChooseStat extends StringStat {
             inv.registerTemplateEdition();
 
             // Sends a message
-            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + getName() + " successfully changed to " + current + ChatColor.GRAY + ".");
+            inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.choose.changed", "{stat} successfully changed to {value}.", "{stat}", getEditorName(), "{value}", current + ChatColor.GRAY.toString()));
         }
     }
 
@@ -91,15 +91,16 @@ public abstract class ChooseStat extends StringStat {
 
         // To display current choosing, gets the very first element
         @Nullable StatChoice found = statData.isPresent() ? getChoice(statData.get().toString()) : null;
-        lore.add(ChatColor.GRAY + "Current Value: " + (found != null ? ChatColor.GREEN + found.getId() : ChatColor.RED + "None"));
+        lore.add(MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.current-value", ChatColor.GRAY + "Current Value: {value}", "{value}", found != null ? ChatColor.GREEN + found.getId() : ChatColor.RED + MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-editor.common.none", "None")));
 
         // Display Definition
         if (found != null && found.getHint() != null) for (String definition : MMOUtils.trimString(LORE_LINE_WIDTH, found.getHint()))
             lore.add(ChatColor.GRAY + " " + definition);
 
         lore.add("");
-        lore.add(ChatColor.YELLOW + AltChar.listDash + " Right click to return to default value.");
-        lore.add(ChatColor.YELLOW + AltChar.listDash + " Left click to cycle through the available options:");
+        lore.addAll(MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-editor.choose.actions-lore", Arrays.asList(
+                ChatColor.YELLOW + AltChar.listDash + " Right click to return to default value.",
+                ChatColor.YELLOW + AltChar.listDash + " Left click to cycle through the available options:")));
         for (StatChoice existing : choices) {
 
             // Is it the one?

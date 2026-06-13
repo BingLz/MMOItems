@@ -38,11 +38,12 @@ public class ItemEdition extends EditionInventory {
 
     @Override
     public String getName() {
-        return "Item Edition: " + getEdited().getId();
+        return MMOItems.plugin.getLanguage().getAdminLanguage().text("gui.item-edition.title", "Item Edition: {id}", "{id}", getEdited().getId());
     }
 
     @Override
     public void arrangeInventory() {
+        var lang = MMOItems.plugin.getLanguage().getAdminLanguage();
         int min = (page - 1) * slots.length;
         int max = page * slots.length;
         int n = 0;
@@ -59,8 +60,8 @@ public class ItemEdition extends EditionInventory {
             ItemStack item = new ItemStack(stat.getDisplayMaterial());
             ItemMeta meta = item.getItemMeta();
             MMOUtils.fixAttributeLore(meta);
-            meta.setDisplayName(ChatColor.GREEN + stat.getName());
-            List<String> lore = MythicLib.plugin.parseColors(Arrays.stream(stat.getLore()).map(s -> ChatColor.GRAY + s).collect(Collectors.toList()));
+            meta.setDisplayName(ChatColor.GREEN + stat.getEditorName());
+            List<String> lore = MythicLib.plugin.parseColors(Arrays.stream(stat.getEditorLore()).map(s -> ChatColor.GRAY + s).collect(Collectors.toList()));
             lore.add("");
             if (stat.getCategory() != null) {
                 lore.add(0, "");
@@ -77,18 +78,20 @@ public class ItemEdition extends EditionInventory {
 
         ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
-        glassMeta.setDisplayName(ChatColor.RED + "- No Item Stat -");
+        glassMeta.setDisplayName(lang.text("gui.item-edition.no-stat", ChatColor.RED + "- No Item Stat -"));
         glass.setItemMeta(glassMeta);
 
         ItemStack next = new ItemStack(Material.ARROW);
         ItemMeta nextMeta = next.getItemMeta();
-        nextMeta.setDisplayName(ChatColor.GREEN + "Next Page");
+        nextMeta.setDisplayName(lang.text("gui.common.next-page", ChatColor.GREEN + "Next Page"));
         next.setItemMeta(nextMeta);
+        setAction(next, "next_page");
 
         ItemStack previous = new ItemStack(Material.ARROW);
         ItemMeta previousMeta = previous.getItemMeta();
-        previousMeta.setDisplayName(ChatColor.GREEN + "Previous Page");
+        previousMeta.setDisplayName(lang.text("gui.common.previous-page", ChatColor.GREEN + "Previous Page"));
         previous.setItemMeta(previousMeta);
+        setAction(previous, "previous_page");
 
         while (n < slots.length)
             inventory.setItem(slots[n++], glass);
@@ -106,12 +109,14 @@ public class ItemEdition extends EditionInventory {
         if (!MMOUtils.isMetaItem(item, false) || event.getInventory().getItem(4) == null)
             return;
 
-        if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Next Page")) {
+        var lang = MMOItems.plugin.getLanguage().getAdminLanguage();
+        String action = getAction(item);
+        if ("next_page".equals(action)) {
             page++;
             open();
         }
 
-        if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Previous Page")) {
+        if ("previous_page".equals(action)) {
             page--;
             open();
         }
@@ -124,7 +129,7 @@ public class ItemEdition extends EditionInventory {
         if (MMOItems.plugin.hasPermissions() && MMOItems.plugin.getLanguage().opStatsEnabled
                 && MMOItems.plugin.getLanguage().opStats.contains(edited.getId())
                 && !MMOItems.plugin.getVault().getPermissions().has((Player) event.getWhoClicked(), "mmoitems.edit.op")) {
-            event.getWhoClicked().sendMessage(ChatColor.RED + "You are lacking permission to edit this stat.");
+            event.getWhoClicked().sendMessage(lang.text("gui.item-edition.no-stat-permission", ChatColor.RED + "You are lacking permission to edit this stat."));
             return;
         }
 

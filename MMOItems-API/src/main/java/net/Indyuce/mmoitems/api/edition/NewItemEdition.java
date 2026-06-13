@@ -25,12 +25,12 @@ public class NewItemEdition implements Edition {
         inv.getPlayer().closeInventory();
 
         inv.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.STRIKETHROUGH + "-----------------------------------------------------");
-        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Write in the chat the ID of the new item.");
-        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + "Type 'cancel' to abort.");
+        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("new-item.prompt", "Write in the chat the ID of the new item."));
+        inv.getPlayer().sendMessage(MMOItems.plugin.getPrefix() + MMOItems.plugin.getLanguage().getAdminLanguage().text("new-item.cancel", "Type 'cancel' to abort."));
 
         // Default chat edition feature
         new ChatEdition(this);
-        inv.getPlayer().sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "Item Creation", "See chat.", 10, 40, 10);
+        inv.getPlayer().sendTitle(MMOItems.plugin.getLanguage().getAdminLanguage().text("new-item.title", ChatColor.GOLD + "" + ChatColor.BOLD + "Item Creation"), MMOItems.plugin.getLanguage().getAdminLanguage().text("new-item.subtitle", "See chat."), 10, 40, 10);
     }
 
     @Override

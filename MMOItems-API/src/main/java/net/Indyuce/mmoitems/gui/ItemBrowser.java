@@ -37,6 +37,7 @@ public class ItemBrowser extends MMOItemsInventory {
     // Slots used to display items based on the item type explored
     private static final int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
     private static final int[] slotsAlt = {1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
+    private static final String CUSTOM_RP_DOWNLOAD_LINK = "https://gitlab.com/phoenix-dvpmt/mmoitems-default-resource-pack/-/archive/main/mmoitems-default-resource-pack-main.zip";
 
     public ItemBrowser(Navigator navigator, Type type) {
         super(navigator);
@@ -52,58 +53,63 @@ public class ItemBrowser extends MMOItemsInventory {
     @NotNull
     @Override
     public Inventory getInventory() {
-        Inventory inv = Bukkit.createInventory(this, 54, (deleteMode ? "Delete Mode: " : "Item Explorer: ") + MythicLib.plugin.getAdventureParser().stripColors(type.getName()));
+        var lang = MMOItems.plugin.getLanguage().getAdminLanguage();
+        Inventory inv = Bukkit.createInventory(this, 54, lang.text(deleteMode ? "gui.item-browser.delete-title" : "gui.item-browser.title", deleteMode ? "Delete Mode: {type}" : "Item Explorer: {type}", "{type}", MythicLib.plugin.getAdventureParser().stripColors(type.getName())));
 
         /*
          * Build cool Item Stacks for buttons and sh
          */
         ItemStack error = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta errorMeta = error.getItemMeta();
-        errorMeta.setDisplayName(ChatColor.RED + "- Error -");
-        List<String> errorLore = new ArrayList<>();
-        errorLore.add("\u00a7\u00a7oAn error occurred while");
-        errorLore.add("\u00a7\u00a7otrying to generate that item.");
+        errorMeta.setDisplayName(lang.text("gui.common.error", ChatColor.RED + "- Error -"));
+        List<String> errorLore = lang.list("gui.item-browser.error-lore", Arrays.asList("&7&oAn error occurred while", "&7&otrying to generate that item."));
         errorMeta.setLore(errorLore);
         error.setItemMeta(errorMeta);
 
         ItemStack noItem = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta noItemMeta = noItem.getItemMeta();
-        noItemMeta.setDisplayName(ChatColor.RED + "- No Item -");
+        noItemMeta.setDisplayName(lang.text("gui.common.no-item", ChatColor.RED + "- No Item -"));
         noItem.setItemMeta(noItemMeta);
 
         ItemStack next = new ItemStack(Material.ARROW);
         ItemMeta nextMeta = next.getItemMeta();
-        nextMeta.setDisplayName(ChatColor.GREEN + "Next Page");
+        nextMeta.setDisplayName(lang.text("gui.common.next-page", ChatColor.GREEN + "Next Page"));
         next.setItemMeta(nextMeta);
+        setAction(next, "next_page");
 
         ItemStack back = new ItemStack(Material.ARROW);
         ItemMeta backMeta = back.getItemMeta();
-        backMeta.setDisplayName(ChatColor.GREEN + AltChar.rightArrow + " Back");
+        backMeta.setDisplayName(lang.text("gui.common.back", ChatColor.GREEN + AltChar.rightArrow + " Back"));
         back.setItemMeta(backMeta);
+        setAction(back, "back");
 
         ItemStack create = new ItemStack(new ItemStack(Material.WRITABLE_BOOK));
         ItemMeta createMeta = create.getItemMeta();
-        createMeta.setDisplayName(ChatColor.GREEN + "Create New");
+        createMeta.setDisplayName(lang.text("gui.item-browser.create-new", ChatColor.GREEN + "Create New"));
         create.setItemMeta(createMeta);
+        setAction(create, "create_new");
 
         ItemStack delete = new ItemStack(new ItemStack(Material.CAULDRON));
         ItemMeta deleteMeta = delete.getItemMeta();
-        deleteMeta.setDisplayName(ChatColor.RED + (deleteMode ? "Cancel Deletion" : "Delete Item"));
+        deleteMeta.setDisplayName(lang.text(deleteMode ? "gui.item-browser.cancel-deletion" : "gui.item-browser.delete-item", ChatColor.RED + (deleteMode ? "Cancel Deletion" : "Delete Item")));
         delete.setItemMeta(deleteMeta);
+        setAction(delete, deleteMode ? "cancel_deletion" : "delete_item");
 
         ItemStack previous = new ItemStack(Material.ARROW);
         ItemMeta previousMeta = previous.getItemMeta();
-        previousMeta.setDisplayName(ChatColor.GREEN + "Previous Page");
+        previousMeta.setDisplayName(lang.text("gui.common.previous-page", ChatColor.GREEN + "Previous Page"));
         previous.setItemMeta(previousMeta);
+        setAction(previous, "previous_page");
 
         if (type == Type.BLOCK) {
             ItemStack downloadPack = new ItemStack(Material.HOPPER);
             ItemMeta downloadMeta = downloadPack.getItemMeta();
-            downloadMeta.setDisplayName(ChatColor.GREEN + "Download Default Resourcepack");
-            downloadMeta.setLore(Arrays.asList(ChatColor.LIGHT_PURPLE + "Only seeing stone blocks?", "",
+            downloadMeta.setDisplayName(lang.text("gui.item-browser.download-resourcepack.name", ChatColor.GREEN + "Download Default Resourcepack"));
+            downloadMeta.setLore(lang.list("gui.item-browser.download-resourcepack.lore", Arrays.asList(ChatColor.LIGHT_PURPLE + "Only seeing stone blocks?", "",
                     ChatColor.RED + "By downloading the default resourcepack you can", ChatColor.RED + "edit the blocks however you want.",
-                    ChatColor.RED + "You will still have to add it to your server!"));
+                    ChatColor.RED + "You will still have to add it to your server!")));
             downloadPack.setItemMeta(downloadMeta);
+            setAction(downloadPack, "download_resourcepack");
             inv.setItem(45, downloadPack);
         }
 
@@ -199,13 +205,14 @@ public class ItemBrowser extends MMOItemsInventory {
 
             // Deleting lore?
             if (deleteMode) {
-                lore.add(ChatColor.RED + AltChar.cross + " CLICK TO DELETE " + AltChar.cross);
-                meta.setDisplayName(ChatColor.RED + "DELETE: " + (meta.hasDisplayName() ? meta.getDisplayName() : MMOUtils.getDisplayName(item)));
+                lore.add(lang.text("gui.item-browser.click-delete-lore", ChatColor.RED + AltChar.cross + " CLICK TO DELETE " + AltChar.cross));
+                meta.setDisplayName(lang.text("gui.item-browser.delete-prefix", ChatColor.RED + "DELETE: {item}", "{item}", meta.hasDisplayName() ? meta.getDisplayName() : MMOUtils.getDisplayName(item)));
 
                 // Editing lore?
             } else {
-                lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Left click to obtain this item.");
-                lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to edit this item.");
+                lore.addAll(lang.list("gui.item-browser.item-actions-lore", Arrays.asList(
+                        ChatColor.YELLOW + AltChar.smallListDash + " Left click to obtain this item.",
+                        ChatColor.YELLOW + AltChar.smallListDash + " Right click to edit this item.")));
             }
 
             meta.setLore(lore);
@@ -258,30 +265,38 @@ public class ItemBrowser extends MMOItemsInventory {
 
         ItemStack item = event.getCurrentItem();
         if (MMOUtils.isMetaItem(item, false)) {
+            String action = getAction(item);
 
             // Back Button
-            if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + AltChar.rightArrow + " Back"))
+            if ("back".equals(action))
                 getNavigator().popOpen();
 
-            else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Next Page")) {
+            else if ("next_page".equals(action)) {
                 page++;
                 open();
-            } else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Previous Page")) {
+            } else if ("previous_page".equals(action)) {
                 page--;
                 open();
             }
 
-            else if (item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Cancel Deletion")) {
+            else if ("cancel_deletion".equals(action)) {
                 deleteMode = false;
                 open();
-            } else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Create New"))
-                new NewItemEdition(this).enable("Write in the chat the text you want.");
+            } else if ("create_new".equals(action))
+                new NewItemEdition(this).enable();
 
-            else if ( item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Delete Item")) {
+            else if ("delete_item".equals(action)) {
                 deleteMode = true;
                 open();
+            } else if ("download_resourcepack".equals(action)) {
+                MythicLib.plugin.getVersion().getWrapper().sendJson(getPlayer(),
+                        "[{\"text\":\"Click to download!\",\"color\":\"green\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + CUSTOM_RP_DOWNLOAD_LINK + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":[\"\",{\"text\":\"Click to download resource pack\",\"italic\":true,\"color\":\"white\"}]}}]");
+                getPlayer().closeInventory();
             }
         }
+
+        if (!MMOUtils.isMetaItem(item, false))
+            return;
 
         String id = NBTItem.get(item).getString("MMOITEMS_ITEM_ID");
         if (id.equals(""))
