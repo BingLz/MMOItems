@@ -205,12 +205,122 @@ public abstract class ItemStat<R extends RandomStatData<S>, S extends StatData> 
 
     @NotNull
     public String getEditorName() {
-        return MMOItems.plugin.getLanguage().getAdminLanguage().text("stat-labels." + getPath() + ".name", name, false);
+        String path = "stat-labels." + getPath() + ".name";
+        if (MMOItems.plugin.getLanguage().getAdminLanguage().contains(path))
+            return MMOItems.plugin.getLanguage().getAdminLanguage().text(path, name, false);
+
+        String statFormat = MMOItems.plugin.getLanguage().getStatFormat(getPath());
+        return statFormat.startsWith("<TranslationNotFound:") ? localizeEditorName(name) : cleanEditorName(statFormat);
     }
 
     @NotNull
     public String[] getEditorLore() {
-        return MMOItems.plugin.getLanguage().getAdminLanguage().list("stat-labels." + getPath() + ".lore", Arrays.asList(lore), false).toArray(new String[0]);
+        String path = "stat-labels." + getPath() + ".lore";
+        return MMOItems.plugin.getLanguage().getAdminLanguage().isList(path) ? MMOItems.plugin.getLanguage().getAdminLanguage().list(path, Arrays.asList(lore), false).toArray(new String[0]) : new String[]{"编辑 " + getEditorName() + " 属性。"};
+    }
+
+    @NotNull
+    private String localizeEditorName(@NotNull String input) {
+        Map<String, String> words = new LinkedHashMap<>();
+        words.put("Required", "需求");
+        words.put("Additional", "额外");
+        words.put("Damage", "伤害");
+        words.put("Reduction", "减免");
+        words.put("Critical", "暴击");
+        words.put("Strike", "");
+        words.put("Chance", "几率");
+        words.put("Power", "强度");
+        words.put("Attack", "攻击");
+        words.put("Speed", "速度");
+        words.put("Health", "生命");
+        words.put("Mana", "法力");
+        words.put("Stamina", "耐力");
+        words.put("Regeneration", "恢复");
+        words.put("Armor", "护甲");
+        words.put("Toughness", "韧性");
+        words.put("Knockback", "击退");
+        words.put("Resistance", "抗性");
+        words.put("Movement", "移动");
+        words.put("Range", "范围");
+        words.put("Cooldown", "冷却");
+        words.put("Block", "格挡");
+        words.put("Dodge", "闪避");
+        words.put("Parry", "招架");
+        words.put("Projectile", "弹射物");
+        words.put("Physical", "物理");
+        words.put("Magic", "魔法");
+        words.put("Weapon", "武器");
+        words.put("Skill", "技能");
+        words.put("Undead", "不死生物");
+        words.put("Level", "等级");
+        words.put("Class", "职业");
+        words.put("Type", "类型");
+        words.put("Item", "物品");
+        words.put("Effect", "效果");
+        words.put("Effects", "效果");
+        words.put("Potion", "药水");
+        words.put("Permanent", "永久");
+        words.put("Permission", "权限");
+        words.put("Commands", "指令");
+        words.put("Abilities", "技能");
+        words.put("Gem", "宝石");
+        words.put("Sockets", "槽");
+        words.put("Custom", "自定义");
+        words.put("Model", "模型");
+        words.put("Data", "数据");
+        words.put("Display", "显示");
+        words.put("Name", "名称");
+        words.put("Lore", "描述");
+        words.put("Durability", "耐久");
+        words.put("Repair", "修复");
+        words.put("Consume", "消耗");
+        words.put("Restore", "恢复");
+        words.put("Food", "饥饿值");
+        words.put("Saturation", "饱和度");
+        words.put("Soulbound", "灵魂绑定");
+        words.put("Hide", "隐藏");
+        words.put("Disable", "禁用");
+        words.put("Arrow", "箭矢");
+        words.put("Particles", "粒子");
+        words.put("Tooltip", "工具提示");
+        words.put("Style", "样式");
+        words.put("Material", "材质");
+        words.put("Tier", "品质");
+        words.put("Set", "套装");
+        words.put("Max", "最大");
+        words.put("Min", "最小");
+        words.put("Fall", "摔落");
+        words.put("Fire", "火焰");
+        words.put("Recoil", "后坐力");
+        words.put("Lifesteal", "生命窃取");
+        words.put("Vampirism", "吸血");
+        words.put("Autosmelt", "自动熔炼");
+        words.put("Handworn", "手持佩戴");
+        words.put("Inedible", "不可食用");
+        words.put("Success", "成功");
+        words.put("Rate", "几率");
+        words.put("Reference", "引用");
+        words.put("Restriction", "限制");
+        String output = input;
+        for (Map.Entry<String, String> entry : words.entrySet())
+            output = output.replace(entry.getKey(), entry.getValue());
+        output = output.replaceAll("\\s+", "").trim();
+        return output.isEmpty() ? input : output;
+    }
+
+    @NotNull
+    private String cleanEditorName(@NotNull String statFormat) {
+        String clean = statFormat.replaceAll("(?i)&[0-9A-FK-ORX]", "")
+                .replace("<plus>", "")
+                .replaceAll("\\{[^}]+}", "")
+                .replaceAll("#([^#]+)#", "")
+                .replaceAll("[➸■✠❤◆✖✔>|\\[\\]*]", "")
+                .trim();
+        int colonIndex = Math.max(clean.indexOf(':'), clean.indexOf('：'));
+        if (colonIndex > 0)
+            clean = clean.substring(0, colonIndex).trim();
+        clean = clean.replaceAll("^\\p{Punct}+", "").trim();
+        return clean.isEmpty() ? name : clean;
     }
 
     /**

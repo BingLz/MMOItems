@@ -39,6 +39,14 @@ public class AdminLanguage {
         return translated;
     }
 
+    public boolean contains(@NotNull String path) {
+        return file.getConfig().contains(path);
+    }
+
+    public boolean isList(@NotNull String path) {
+        return file.getConfig().isList(path);
+    }
+
     public void save() {
         file.save();
     }

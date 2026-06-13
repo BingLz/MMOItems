@@ -8,7 +8,7 @@
 
 CUSTOM_MYLUCK:
   # The name that will be used in the edition GUI
-  name: 'My Luck'
+  name: '幸运值'
 
   # Allowed stats type:
   # - double (numbers)
@@ -17,5 +17,5 @@ CUSTOM_MYLUCK:
 
   # The lore must be a list of strings
   lore:
-    - 'This is a test line #1'
-    - 'This is a test line #2'
+    - '示例说明 #1'
+    - '示例说明 #2'
